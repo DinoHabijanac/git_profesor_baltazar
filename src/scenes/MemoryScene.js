@@ -193,7 +193,6 @@ export default class MemoryGameScene extends BaseScene {
     this.container.appendChild(this.sceneEl);
 
     this.sceneEl.querySelector("#btnNewGame").addEventListener("click", () => {
-      console.log("New Game clicked");
       this.currentScreen = "rules";
       this.render();
     });
@@ -238,7 +237,6 @@ export default class MemoryGameScene extends BaseScene {
   }
 
   renderGameplayScreen() {
-    console.log("Rendering gameplay screen");
 
     if (this.sceneEl) this.sceneEl.remove();
     this.sceneEl = document.createElement("div");
@@ -276,11 +274,8 @@ export default class MemoryGameScene extends BaseScene {
       this.render();
     });
 
-    console.log("Attaching card listeners...");
     this.sceneEl.querySelectorAll(".card").forEach((cardEl) => {
-      console.log("Card listener attached to:", cardEl);
       cardEl.addEventListener("click", (e) => {
-        console.log("Card clicked:", cardEl);
         const index = parseInt(cardEl.getAttribute("data-index"));
         this.onCardClick(index);
       });

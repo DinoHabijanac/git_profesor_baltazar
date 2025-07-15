@@ -10,15 +10,18 @@ export default class MemoryGameScene extends BaseScene {
     this.handleClick = this.handleClick.bind(this);
     this.updateFrameCount = this.updateFrameCount.bind(this);
 
-    this.cards = [];
-    this.flippedCards = [];
-    this.matchedCards = new Set();
-
-    this.score = 0;
-    this.timeLeft = 120;
+    this.round = 1;
+    this.playerWins = 0;
+    this.botWins = 0;
+    this.botChoice = null;
+    this.currentPlayerGesture = null;
+    this.sceneEl = null;
     this.gameResult = 0;
-
-    this.timerInterval = null;
+    this.roundResult = null;
+    this.roundState = "countdown"; // countdown, waiting, show_result
+    this.countdownTime = 3;
+    this.countdownInterval = null;
+    this.gameOver = 0;
   }
 
   async init() {
@@ -51,93 +54,85 @@ export default class MemoryGameScene extends BaseScene {
   }
 
   startNewGame() {
-    this.score = 0;
-    this.timeLeft = 120;
-    this.flippedCards = [];
-    this.matchedCards.clear();
+    this.round = 1;
+    this.playerWins = 0;
+    this.botWins = 0;
+    this.currentPlayerGesture = null;
+    this.roundResult = null;
+    this.roundState = "countdown";
+    this.gameOver = 0;
 
-    this.setupCards();
+    this.currentScreen = "game";
+    this.startNextRound();
+  }
 
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    this.timerInterval = setInterval(() => {
-      this.timeLeft--;
-      if (this.timeLeft <= 0) {
-        this.timeLeft = 0;
-        this.currentScreen = "gameover";
-        this.gameResult = 0;
-        clearInterval(this.timerInterval);
-      } else {
+  startNextRound() {
+    this.roundState = "countdown";
+    this.currentPlayerGesture = null;
+    this.roundResult = null;
+    this.countdownTime = 3;
+
+    this.renderGameplayScreen();
+
+    this.countdownInterval = setInterval(() => {
+      this.countdownTime--;
+      this.renderGameplayScreen();
+
+      if (this.countdownTime <= 0) {
+        clearInterval(this.countdownInterval);
+        this.roundState = "waiting";
         this.renderGameplayScreen();
       }
     }, 1000);
+  }
 
-    this.currentScreen = "game";
-    this.render();
+  handleGesture({ gesture }) {
+    if (this.roundState !== "waiting") return;
+    const validGestures = {
+      Closed_Fist: "kamen",
+      Open_Palm: "papir",
+      Victory: "skare",
+    };
+
+    if (!validGestures[gesture]) return;
+
+    // Prevent multiple readings per round
+    if (this.currentPlayerGesture) return;
+
+    this.currentPlayerGesture = validGestures[gesture];
+    this.playComputerMove();
   }
-  formatTime(seconds) {
-    const mins = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
-    const secs = (seconds % 60).toString().padStart(2, "0");
-    return `${mins}:${secs}`;
-  }
-  setupCards() {
-    const cardTypes = [];
-    for (let i = 1; i <= 6; i++) {
-      cardTypes.push(`mem-card${i}`);
+
+  playComputerMove() {
+    const options = ["kamen", "papir", "skare"];
+    const botChoice = options[Math.floor(Math.random() * options.length)];
+
+    const winner = this.getWinner(this.currentPlayerGesture, botChoice);
+
+    this.roundResult = {
+      player: this.currentPlayerGesture,
+      computer: botChoice,
+      winner,
+    };
+    if (this.playerWins === 3 || this.botWins === 3) {
+      this.gameResult = this.playerWins > this.botWins ? 1 : 0;
+      this.gameOver = 1;
     }
-
-    // Add two of each type (for pairs)
-    const allCards = [...cardTypes, ...cardTypes];
-    for (let i = allCards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
-    }
-
-    this.cards = allCards.map((type, index) => ({
-      id: index,
-      type,
-      flipped: false,
-      matched: false,
-    }));
-  }
-
-  onCardClick(index) {
-    const card = this.cards[index];
-
-    if (card.flipped || card.matched || this.flippedCards.length === 2) return;
-
-    card.flipped = true;
-    this.flippedCards.push(card);
-
+    this.roundState = "show_result";
     this.renderGameplayScreen();
-
-    if (this.flippedCards.length === 2) {
-      setTimeout(() => this.checkMatch(), 800);
-    }
   }
-  checkMatch() {
-    const [cardA, cardB] = this.flippedCards;
-
-    if (cardA.type === cardB.type) {
-      cardA.matched = true;
-      cardB.matched = true;
-      this.matchedCards.add(cardA.id);
-      this.matchedCards.add(cardB.id);
-      this.score += 10;
+  getWinner(player, computer) {
+    if (player === computer) return "draw";
+    if (
+      (player === "kamen" && computer === "skare") ||
+      (player === "skare" && computer === "papir") ||
+      (player === "papir" && computer === "kamen")
+    ) {
+      this.playerWins++;
+      return "player";
     } else {
-      cardA.flipped = false;
-      cardB.flipped = false;
-    }
-
-    this.flippedCards = [];
-    this.renderGameplayScreen();
-
-    if (this.cards.every((c) => c.matched)) {
-      clearInterval(this.timerInterval);
-      this.gameResult = 1;
-      this.currentScreen = "gameover";
-      this.render();
+      this.botWins++;
+      return "bot";
     }
   }
 
@@ -185,7 +180,6 @@ export default class MemoryGameScene extends BaseScene {
     this.container.appendChild(this.sceneEl);
 
     this.sceneEl.querySelector("#btnNewGame").addEventListener("click", () => {
-      console.log("New Game clicked");
       this.currentScreen = "rules";
       this.render();
     });
@@ -207,9 +201,9 @@ export default class MemoryGameScene extends BaseScene {
       </div>
       <div class="content">
         <p>
-         Igraj protiv Baltazarova stroja!
-         Izaberi kamen, papir ili škare rukom ispred kamere – stroj odgovara odmah. <br><br>
-Tko će pobijediti ? Saznaj u odmah !
+          Igraj protiv Baltazarova stroja!
+          Izaberi kamen, papir ili škare rukom ispred kamere – stroj odgovara odmah. <br><br>
+          Tko će pobijediti ? Saznaj odmah !
         </p>
       </div>
       <div class="bottomRow">
@@ -230,24 +224,52 @@ Tko će pobijediti ? Saznaj u odmah !
   }
 
   renderGameplayScreen() {
-    console.log("Rendering gameplay screen");
-
     if (this.sceneEl) this.sceneEl.remove();
     this.sceneEl = document.createElement("div");
     this.sceneEl.classList.add("container");
 
-    let gridHTML = this.cards
-      .map(
-        (card) => `
-      <div class="card" data-index="${card.id}">
-        <img src="${
-          card.flipped || card.matched
-            ? this.assets.images.get(card.type).src
-            : this.assets.images.get("mem-card-back").src
-        }"/>
-      </div>`
-      )
-      .join("");
+    let htmlState = "";
+    // -----------REZULTAT-----------
+    if (this.roundState === "show_result") {
+      const playerImg = this.assets.images.get(
+        `ksp-${this.roundResult.player}`
+      ).src;
+      const compImg = this.assets.images.get(
+        `ksp-${this.roundResult.computer}`
+      ).src;
+      const resultText =
+        this.roundResult.winner === "draw"
+          ? "NERIJEŠENO !"
+          : this.roundResult.winner === "player"
+          ? "POBJEDA!"
+          : "PORAZ!";
+
+      htmlState += `<p class="gameText">Ti:</p>
+        <img src="${playerImg}" class="gestureIcon" />
+        <p class="resultText gameText">${resultText}</p> <br>
+        <p class="gameText">Baltazorov stroj:</p>
+        <img src="${compImg}" class="gestureIcon" />`;
+
+      if (this.gameOver === 0) {
+        htmlState += `
+        <button class="memoryBtn" id="btnNextRound">Sljedeća runda</button>
+      `;
+      }
+      if (this.gameOver === 1) {
+        htmlState += `
+        <button class="memoryBtn" id="btnNextRound">Završi igru</button>
+      `;
+      }
+    }
+
+    // -----------ODBROJAVANJE-----------
+    if (this.roundState === "countdown") {
+      htmlState += `<h1>${this.countdownTime}</h1>`;
+    }
+    // -----------ČEKANJE-----------
+    else if (this.roundState === "waiting") {
+      htmlState += `<p>Prikaži ruku!</p>`;
+    }
 
     this.sceneEl.innerHTML = `
     <div id="gameScreen">
@@ -255,12 +277,15 @@ Tko će pobijediti ? Saznaj u odmah !
         Odustani
       </button>
       <div class="titleRow">
-        <p>Rezultat: ${this.score}<br> Vrijeme: ${this.formatTime(
-      this.timeLeft
-    )}</p>
+        <p>
+          Runda: ${this.round} <br>
+          Igrač: ${this.playerWins} <br>
+          Stroj: ${this.botWins}
+        </p>
       </div>
-      <div class="card-grid">${gridHTML}</div>
-    </div>`;
+      <div class="content">${htmlState}</div>
+    </div>
+    `;
     this.container.appendChild(this.sceneEl);
 
     this.sceneEl.querySelector("#btnGiveUp").addEventListener("click", () => {
@@ -270,15 +295,20 @@ Tko će pobijediti ? Saznaj u odmah !
       this.render();
     });
 
-    console.log("Attaching card listeners...");
-    this.sceneEl.querySelectorAll(".card").forEach((cardEl) => {
-      console.log("Card listener attached to:", cardEl);
-      cardEl.addEventListener("click", (e) => {
-        console.log("Card clicked:", cardEl);
-        const index = parseInt(cardEl.getAttribute("data-index"));
-        this.onCardClick(index);
-      });
-    });
+    if (this.roundState === "show_result") {
+      this.sceneEl
+        .querySelector("#btnNextRound")
+        .addEventListener("click", () => {
+          if (this.gameOver === 1) {
+            this.currentScreen = "gameover";
+            this.render();
+          }
+          if (this.gameOver === 0) {
+            this.round++;
+            this.startNextRound();
+          }
+        });
+    }
   }
 
   renderGameOverScreen() {
@@ -340,7 +370,7 @@ Tko će pobijediti ? Saznaj u odmah !
   }
 
   async destroy() {
-    if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
     this.lastRenderedScreen = null;
     this.input.off("move", this.handleMove);
     this.input.off("click", this.handleClick);
@@ -348,8 +378,18 @@ Tko će pobijediti ? Saznaj u odmah !
     await super.destroy();
   }
 
-  handleMove({ x, y, i }) {
+  handleMove({ x, y, i, gesture }) {
     this.updateCursor(x, y, i);
+
+    if (this.currentScreen === "game") {
+      if (
+        gesture === "Victory" ||
+        gesture === "Open_Palm" ||
+        gesture === "Closed_Fist"
+      ) {
+        this.handleGesture({ gesture });
+      }
+    }
   }
 
   handleClick({ x, y }) {

@@ -1,5 +1,5 @@
 export default class BaseScene {
-  constructor({ assets, input, manager }) {
+  constructor({ assets, input, manager, useColorIndicator = false }) {
     this.assets = assets;
     this.input = input;
     this.manager = manager;
@@ -7,7 +7,7 @@ export default class BaseScene {
     this.handSmoothed = new Map(); 
     this.handLastSeen = new Map();
     this.cursorContainer = document.body;
-    this.useColorIndicator = false;
+    this.useColourIndicator = useColorIndicator;
     this.cursorOffset = () => ({ x: 0, y: 0 });
 
     this.MAX_MISSING_FRAMES = 5;
@@ -24,41 +24,41 @@ export default class BaseScene {
     });
   }
 
-createCursor(id) {
-  const wrapper = document.createElement('div');
-  wrapper.classList.add('cursor-wrapper');
+  createCursor(id) {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('cursor-wrapper');
 
-  const img = document.createElement('img');
-  img.classList.add('mouse_pointer');
-  img.id = `cursor_${id}`;
-  img.src = this.assets.images.get('cursor').src;
+    const img = document.createElement('img');
+    img.classList.add('mouse_pointer');
+    img.id = `cursor_${id}`;
+    img.src = this.assets.images.get('cursor').src;
 
-  Object.assign(img.style, {
-    pointerEvents: 'none',
-    backgroundSize: 'cover',
-    display: 'block'
-  });
+    Object.assign(img.style, {
+      pointerEvents: 'none',
+      backgroundSize: 'cover',
+      display: 'block'
+    });
 
-  wrapper.appendChild(img);
-  wrapper.img = img;
+    wrapper.appendChild(img);
+    wrapper.img = img;
 
-  if (this.useColorIndicator) {
-    const indicator = document.createElement('div');
-    indicator.classList.add('cursor-indicator');
-    wrapper.appendChild(indicator);
-    wrapper.indicator = indicator;
+    if (this.useColourIndicator) {
+      const indicator = document.createElement('div');
+      indicator.classList.add('cursor-indicator');
+      wrapper.appendChild(indicator);
+      wrapper.indicator = indicator;
+    }
+
+    Object.assign(wrapper.style, {
+      position: 'absolute',
+      pointerEvents: 'none',
+      display: 'block'
+    });
+
+    this.cursorContainer.appendChild(wrapper);
+    this.handCursors.set(id, wrapper);
+    return wrapper;
   }
-
-  Object.assign(wrapper.style, {
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'block'
-  });
-
-  this.cursorContainer.appendChild(wrapper);
-  this.handCursors.set(id, wrapper);
-  return wrapper;
-}
 
 
   removeCursor(id) {

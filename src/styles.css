@@ -59,8 +59,6 @@ body, html {
 }
 .cursor-indicator {
     position: absolute;
-    width: 32px;
-    height: 32px;
     border-radius: 50%;
     border: 2px solid white;
     left: 0;
@@ -103,6 +101,10 @@ body, html {
         width: 48px;
         height: auto;
     }
+    .cursor-indicator {
+        width: 6px;
+        height: 6px;
+    }
 }
 
 /* TABLETI */
@@ -126,5 +128,9 @@ body, html {
     .mouse_pointer {
         width: 256px;
         height: auto;
+    }
+    .cursor-indicator {
+        width: 32px;
+        height: 32px;
     }
 }

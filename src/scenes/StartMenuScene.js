@@ -32,10 +32,10 @@ export default class StartMenuScene extends BaseScene {
     this.cursorContainer = this.sceneEl;
 
     this.sceneEl.querySelector('#btnDrawing').addEventListener('click', () => this.manager.switch('Drawing'));
-    this.sceneEl.querySelector('#btnStarCatching').addEventListener('click', () => this.manager.switch('StarCatching'));
+    /*this.sceneEl.querySelector('#btnStarCatching').addEventListener('click', () => this.manager.switch('StarCatching'));
     this.sceneEl.querySelector('#btnLabyrinth').addEventListener('click', () => this.manager.switch('Labyrinth'));
     this.sceneEl.querySelector('#btnFruitCollecting').addEventListener('click', () => this.manager.switch('FruitCollecting'));
-    this.sceneEl.querySelector('#btnQuiz').addEventListener('click', () => this.manager.switch('Quiz'));
+    this.sceneEl.querySelector('#btnQuiz').addEventListener('click', () => this.manager.switch('Quiz'));*/
 
     this.input.on('move', this.handleMove);
     this.input.on('click', this.handleClick);

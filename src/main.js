@@ -20,6 +20,6 @@ import DrawingScene from '@scenes/DrawingScene.js';
   const engine = new Engine({ sceneManager: scenes, inputManager: input, assetManager: assets });
   await engine.init();
 
-  await scenes.switch('StartMenu');
+  await scenes.switch('Drawing');
   engine.start();
 })();

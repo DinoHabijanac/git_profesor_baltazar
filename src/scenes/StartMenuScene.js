@@ -21,6 +21,8 @@ export default class StartMenuScene extends BaseScene {
         <img class="imgProfBaltazar" src="${this.assets.images.get('profBaltazar').src}" />
       </div>
       <div class="secondLayer layer">
+        <button class="textStyle btn btnGameButtons" id="btnLetimir">Letimir</button>
+        <button class="textStyle btn btnGameButtons" id="btnSpojiCudo">Spoji Čudo</button>
         <button class="textStyle btn btnGameButtons" id="btnDrawing">Crtanje</button>
         <button class="textStyle btn btnGameButtons" id="btnStarCatching">Ulovi zvijezde</button>
         <button class="textStyle btn btnGameButtons" id="btnLabyrinth">Labirint</button>
@@ -35,7 +37,9 @@ export default class StartMenuScene extends BaseScene {
     this.sceneEl.querySelector('#btnStarCatching').addEventListener('click', () => this.manager.switch('StarCatching'));
     this.sceneEl.querySelector('#btnLabyrinth').addEventListener('click', () => this.manager.switch('Labyrinth'));
     this.sceneEl.querySelector('#btnFruitCollecting').addEventListener('click', () => this.manager.switch('FruitCollecting'));
+    this.sceneEl.querySelector('#btnLetimir').addEventListener('click', () => this.manager.switch('Letimir'));
     this.sceneEl.querySelector('#btnQuiz').addEventListener('click', () => this.manager.switch('Quiz'));
+    this.sceneEl.querySelector('#btnSpojiCudo').addEventListener('click', () => this.manager.switch('SpojiCudo'));
 
     this.input.on('move', this.handleMove);
     this.input.on('click', this.handleClick);

@@ -1,0 +1,142 @@
+@import url("/FontFamily/fontFamily.css");
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    cursor: none;
+    touch-action: none;
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 300px;
+    color: white;
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 150px;
+    font-family: Marhey;
+    text-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.backBtn {
+    height: 100px;
+    background-color: transparent;
+    position: absolute;
+    top: 100px;
+    left: 50px;
+    text-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+#startScreen {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: linear-gradient(rgba(255, 255, 255, 0.15), rgba(36, 35, 35, 0.15)),
+        url("../pictures/kspGame/background_baltazar.png");
+    background-position: 50%;
+    background-size: auto 100%;
+}
+
+#uputeScreen {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: linear-gradient(rgba(36, 35, 35, 0.8), rgba(36, 35, 35, 0.8)),
+        url("../pictures/kspGame/background_stroj.png");
+    background-position: 50%;
+    background-size: auto 100%;
+}
+
+#gameScreen {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+        url("../pictures/kspGame/background_stroj.png");
+    background-position: 50%;
+    background-size: auto 100%;
+}
+
+.titleRow {
+    height: max-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: Marhey;
+    text-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.titleRow>p {
+    width: 100%;
+    font-size: 100px;
+    color: white;
+    text-align: right;
+    padding-right: 80px;
+}
+
+.memoryBtn {
+    background-color: #008782;
+    border: 0;
+    height: max-content;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    color: white;
+    font-family: Marhey;
+    font-size: 100px;
+    text-align: center;
+    padding: 20px 200px 20px 200px;
+    text-shadow: none;
+    cursor: none;
+}
+
+.memoryBtn:hover {
+    cursor: none;
+}
+
+.bottomRow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    bottom: 200px;
+    gap: 150px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    display: flex;
+    height: 70%;
+    align-items: center;
+    justify-content: center;
+}
+
+.content>p {
+    width: 50%;
+    font-size: 100px;
+    text-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    font-family: Marhey;
+    padding: 0px 100px 0px 100px;
+}
+
+.content>img {
+    height: 700px;
+}
+
+.resultText {
+    color: lightgoldenrodyellow;
+    font-size: 500px;
+}
+
+.gameText {
+    text-shadow: 2px 2px black;
+}

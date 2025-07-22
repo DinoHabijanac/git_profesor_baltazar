@@ -1,4 +1,4 @@
-import BaseScene from '@engine/BaseScene.js';
+import BaseScene from "@engine/BaseScene.js";
 
 export default class DrawingScene extends BaseScene {
   constructor(params) {
@@ -22,16 +22,18 @@ export default class DrawingScene extends BaseScene {
   }
 
   async init() {
-    await this.assets.loadImage('backButton','/pictures/backButton.webp');
-    await this.assets.loadImage('cursor','/pictures/drawingGame/brush.webp');
+    await this.assets.loadImage("backButton", "/pictures/backButton.webp");
+    await this.assets.loadImage("cursor", "/pictures/drawingGame/brush.webp");
 
-    this.styleEl = this.loadStyle('/css/Drawing.css');
+    this.styleEl = this.loadStyle("/css/Drawing.css");
 
-    this.sceneEl = document.createElement('div');
-    this.sceneEl.classList.add('container', 'drawing-container');
+    this.sceneEl = document.createElement("div");
+    this.sceneEl.classList.add("container", "drawing-container");
     this.sceneEl.innerHTML = `
       <div class="firstLayer layer">
-        <button class="btn" id="btnBack"><img src="${this.assets.images.get('backButton').src}" height="100%"/></button>
+        <button class="btn" id="btnBack"><img src="${
+          this.assets.images.get("backButton").src
+        }" height="100%"/></button>
       </div>
       <div class="secondLayer layer">
         <button class="btnSecondLayer textStyle btn" id="btnClearBackground">Očisti pozadinu</button>
@@ -53,14 +55,14 @@ export default class DrawingScene extends BaseScene {
 
     this.cursorContainer = this.sceneEl;
 
-    this.canvasElement = this.sceneEl.querySelector('.output_canvas');
-    this.canvasCtx = this.canvasElement.getContext('2d');
-    this.btnBack = this.sceneEl.querySelector('#btnBack');
-    this.btnClearBackground = this.sceneEl.querySelector('#btnClearBackground');
-    this.btnRGBPicker = this.sceneEl.querySelector('#btnRGBPicker');
+    this.canvasElement = this.sceneEl.querySelector(".output_canvas");
+    this.canvasCtx = this.canvasElement.getContext("2d");
+    this.btnBack = this.sceneEl.querySelector("#btnBack");
+    this.btnClearBackground = this.sceneEl.querySelector("#btnClearBackground");
+    this.btnRGBPicker = this.sceneEl.querySelector("#btnRGBPicker");
 
     this.colorButtons = {};
-    ['Green','Blue','Red','Yellow','White','Black'].forEach(name => {
+    ["Green", "Blue", "Red", "Yellow", "White", "Black"].forEach((name) => {
       const id = `btn${name}`;
       const el = this.sceneEl.querySelector(`#${id}`);
       const color = el.style.background;
@@ -68,17 +70,26 @@ export default class DrawingScene extends BaseScene {
     });
 
     this.resize();
-    window.addEventListener('resize', this.resize.bind(this));
+    window.addEventListener("resize", this.resize.bind(this));
 
-    this.btnBack.addEventListener('click', ()=>this.manager.switch('StartMenu'));
-    this.btnClearBackground.addEventListener('click', ()=>this.canvasCtx.clearRect(0,0,this.canvasElement.width,this.canvasElement.height));
+    this.btnBack.addEventListener("click", () =>
+      this.manager.switch("StartMenu")
+    );
+    this.btnClearBackground.addEventListener("click", () =>
+      this.canvasCtx.clearRect(
+        0,
+        0,
+        this.canvasElement.width,
+        this.canvasElement.height
+      )
+    );
     Object.values(this.colorButtons).forEach(({ el, color }) => {
       el.style.background = color;
     });
 
-    this.input.on('move', this.handleMove);
-    this.input.on('click', this.handleClick);
-    this.input.on('frameCount', this.updateFrameCount);
+    this.input.on("move", this.handleMove);
+    this.input.on("click", this.handleClick);
+    this.input.on("frameCount", this.updateFrameCount);
   }
 
   update(dt) {}
@@ -86,11 +97,11 @@ export default class DrawingScene extends BaseScene {
   render() {}
 
   async destroy() {
-    this.input.off('move', this.handleMove);
-    this.input.off('click', this.handleClick);
-    this.input.off('frameCount', this.updateFrameCount);
+    this.input.off("move", this.handleMove);
+    this.input.off("click", this.handleClick);
+    this.input.off("frameCount", this.updateFrameCount);
     this.removeStyle(this.styleEl);
-    window.removeEventListener('resize', this.resize.bind(this));
+    window.removeEventListener("resize", this.resize.bind(this));
     await super.destroy();
     this.sceneEl.remove();
   }
@@ -132,30 +143,30 @@ export default class DrawingScene extends BaseScene {
 
   calculateRGBColor(ratio) {
     let newColor, bgColor;
-    if (ratio <= 1/6){
-        const g = Math.round(ratio * 6 * 255);
-        newColor = `rgb(255, ${g}, 0)`;
-        bgColor = `rgba(255, ${g}, 0, 0.3)`;
-    } else if(ratio <= 2/6){
-        const r = 255 - Math.round((ratio - 1/6) * 6 * 255);
-        newColor = `rgb(${r}, 255, 0)`;
-        bgColor = `rgba(${r}, 255, 0, 0.3)`;
-    } else if(ratio <= 3/6){
-        const b = Math.round((ratio - 2/6) * 6 * 255);
-        newColor = `rgb(0, 255, ${b})`;
-        bgColor = `rgba(0, 255, ${b}, 0.3)`;
-    } else if(ratio <= 4/6){
-        const g = 255 - Math.round((ratio - 3/6) * 6 * 255);
-        newColor = `rgb(0, ${g}, 255)`;
-        bgColor = `rgba(0, ${g}, 255, 0.3)`;
-    } else if(ratio <= 5/6){
-        const r = Math.round((ratio - 4/6) * 6 * 255);
-        newColor = `rgb(${r}, 0, 255)`;
-        bgColor = `rgba(${r}, 0, 255, 0.3)`;
+    if (ratio <= 1 / 6) {
+      const g = Math.round(ratio * 6 * 255);
+      newColor = `rgb(255, ${g}, 0)`;
+      bgColor = `rgba(255, ${g}, 0, 0.3)`;
+    } else if (ratio <= 2 / 6) {
+      const r = 255 - Math.round((ratio - 1 / 6) * 6 * 255);
+      newColor = `rgb(${r}, 255, 0)`;
+      bgColor = `rgba(${r}, 255, 0, 0.3)`;
+    } else if (ratio <= 3 / 6) {
+      const b = Math.round((ratio - 2 / 6) * 6 * 255);
+      newColor = `rgb(0, 255, ${b})`;
+      bgColor = `rgba(0, 255, ${b}, 0.3)`;
+    } else if (ratio <= 4 / 6) {
+      const g = 255 - Math.round((ratio - 3 / 6) * 6 * 255);
+      newColor = `rgb(0, ${g}, 255)`;
+      bgColor = `rgba(0, ${g}, 255, 0.3)`;
+    } else if (ratio <= 5 / 6) {
+      const r = Math.round((ratio - 4 / 6) * 6 * 255);
+      newColor = `rgb(${r}, 0, 255)`;
+      bgColor = `rgba(${r}, 0, 255, 0.3)`;
     } else {
-        const b = 255 - Math.round((ratio - 5/6) * 6 * 255);
-        newColor = `rgb(255, 0, ${b})`;
-        bgColor = `rgba(255, 0, ${b}, 0.3)`;
+      const b = 255 - Math.round((ratio - 5 / 6) * 6 * 255);
+      newColor = `rgb(255, 0, ${b})`;
+      bgColor = `rgba(255, 0, ${b}, 0.3)`;
     }
     return { newColor, bgColor };
   }
@@ -174,14 +185,14 @@ export default class DrawingScene extends BaseScene {
         drawing: false,
         prevX: xPx,
         prevY: yPx,
-        color: 'black',
+        color: "black",
         screenX,
         screenY,
       };
       this.handData.set(i, data);
     }
 
-    if (gesture === 'Pointing_Up') {
+    if (gesture === "Pointing_Up") {
       if (data.drawing) {
         this.canvasCtx.beginPath();
         this.canvasCtx.moveTo(data.prevX, data.prevY);
@@ -217,15 +228,18 @@ export default class DrawingScene extends BaseScene {
     const handId = this.findHandFromCursor(px, py);
 
     switch (el.id) {
-      case 'btnBack':
-        console.log("pressed")
-        this.manager.switch('StartMenu');
+      case "btnBack":
+        this.manager.switch("StartMenu");
         break;
-      case 'btnClearBackground':
-        this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+      case "btnClearBackground":
+        this.canvasCtx.clearRect(
+          0,
+          0,
+          this.canvasElement.width,
+          this.canvasElement.height
+        );
         break;
-      case 'btnRGBPicker':
-        console.log("pressed")
+      case "btnRGBPicker":
         if (handId) {
           const rect = el.getBoundingClientRect();
           const ratio = (px - rect.left) / rect.width;
@@ -238,7 +252,7 @@ export default class DrawingScene extends BaseScene {
         if (btn && handId) {
           this.setHandColor(handId, btn.color, btn.bg);
         }
-        if (el.tagName === 'BUTTON' && !btn) el.click();
+        if (el.tagName === "BUTTON" && !btn) el.click();
     }
   }
 }

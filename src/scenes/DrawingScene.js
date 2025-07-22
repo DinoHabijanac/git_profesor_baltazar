@@ -2,13 +2,19 @@ import BaseScene from "@engine/BaseScene.js";
 
 export default class DrawingScene extends BaseScene {
   constructor(params) {
-    super(params);
-    this.container = document.getElementById("gameContainer");
-    this.useColorIndicator = true;
-    this.cursorOffset = (img) => ({ x: 10, y: -img.clientHeight - 10 });
+    super({ ...params, useColorIndicator: true });
+    this.container = document.getElementById('gameContainer');
+    this.cursorOffset = img => ({ x: 10, y: -img.clientHeight - 10 });
 
     this.handData = new Map();
-    this.baseLineWidth = 80;
+    console.log(window.innerWidth);
+    if(window.innerWidth < 512) {
+      this.baseLineWidth = window.innerWidth * 0.02;
+    } else if (window.innerWidth > 1920) {
+      this.baseLineWidth = window.innerWidth * 0.08;
+    } else {
+      this.baseLineWidth = window.innerWidth * 0.025;
+    }
 
     this.handleMove = this.handleMove.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -122,14 +128,13 @@ export default class DrawingScene extends BaseScene {
     return closest;
   }
 
-  setHandColor(id, color, bg) {
-    if (!id) return;
+  setHandColor(id, color) {
+    if (id === undefined || id === null) return;
     const data = this.handData.get(id) || {};
     data.color = color;
     this.handData.set(id, data);
     const cursor = this.handCursors.get(id);
     if (cursor) {
-      cursor.style.backgroundColor = bg;
       if (cursor.indicator) {
         cursor.indicator.style.backgroundColor = color;
       }
@@ -208,6 +213,11 @@ export default class DrawingScene extends BaseScene {
     data.currY = yPx;
     data.screenX = screenX;
     data.screenY = screenY;
+  }
+
+  removeCursor(id){
+    super.removeCursor(id);
+    this.handData.delete(id);
   }
 
   handleClick({ x, y }) {
